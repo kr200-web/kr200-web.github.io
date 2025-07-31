@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Spider‑Diagramm</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 2em auto;
+      padding: 1em;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h2>Tugenden bewerten</h2>
+  <form id="form">
+    <label>Selbstkontrolle: <input type="number" name="Selbstkontrolle" min="0" max="6" value="3"></label>
+    <label>Respekt: <input type="number" name="Respekt" min="0" max="6" value="3"></label>
+    <label>Mitgefühl: <input type="number" name="Mitgefühl" min="0" max="6" value="3"></label>
+    <label>Ehrlichkeit: <input type="number" name="Ehrlichkeit" min="0" max="6" value="3"></label>
+    <label>Ernsthaftigkeit: <input type="number" name="Ernsthaftigkeit" min="0" max="6" value="3"></label>
+    <label>Mut: <input type="number" name="Mut" min="0" max="6" value="3"></label>
+    <label>Verlässlichkeit: <input type="number" name="Verlässlichkeit" min="0" max="6" value="3"></label>
+    <br>
+    <button type="submit">Diagramm aktualisieren</button>
+  </form>
+
+  <canvas id="radarChart" width="600" height="600"></canvas>
+  <br>
+  <button onclick="downloadImage()">Diagramm als Bild speichern</button>
+
+  <script>
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    const labels = ["Selbstkontrolle", "Respekt", "Mitgefühl", "Ehrlichkeit", "Ernsthaftigkeit", "Mut", "Verlässlichkeit"];
+    let data = [3, 3, 3, 3, 3, 3, 3];
+
+    const chart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Tugenden',
+          data: data,
+          fill: true,
+          backgroundColor: 'rgba(255,99,132,0.2)',
+          borderColor: 'red',
+          pointBackgroundColor: 'red'
+        }]
+      },
+      options: {
+        responsive: false,
+        scales: {
+          r: {
+            min: 0,
+            max: 6,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+
+    document.getElementById('form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const newData = labels.map(label => Number(formData.get(label)));
+      chart.data.datasets[0].data = newData;
+      chart.update();
+    });
+
+    function downloadImage() {
+      const link = document.createElement('a');
+      link.download = 'tugenden_spiderchart.png';
+      link.href = document.getElementById('radarChart').toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>
